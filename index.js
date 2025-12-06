@@ -15,7 +15,7 @@ const appName = process.argv[2]
 // If no name provided → show usage and exit
 if (!appName || appName.trim() === "") {
   console.error("❌ Please provide a project name")
-  console.error("   Example: npx boilerplate-generator my-api")
+  console.error("   Example: npx @shubhamstr/boilerplate-generator my-api")
   process.exit(1)
 }
 

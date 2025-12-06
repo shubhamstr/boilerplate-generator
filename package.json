@@ -1,11 +1,11 @@
 {
   "name": "@shubhamstr/boilerplate-generator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "boilerplate-generator": "./index.js"
+    "@shubhamstr/boilerplate-generator": "./index.js"
   },
   "keywords": [
     "express",

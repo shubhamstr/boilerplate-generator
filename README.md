@@ -19,7 +19,7 @@ It includes:
 After generating a project with:
 
 ```bash
-npx boilerplate-generator my-app
+npx @shubhamstr/boilerplate-generator my-api
 ```
 
 Move into the project:
