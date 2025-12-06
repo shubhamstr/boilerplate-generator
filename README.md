@@ -22,12 +22,6 @@ After generating a project with:
 npx YOUR_CLI_NAME my-app
 ```
 
-or (after local linking):
-
-```bash
-YOUR_CLI_NAME my-app
-```
-
 Move into the project:
 
 ```bash
@@ -215,14 +209,3 @@ You can customize:
 * Routes and versioning
 * Authentication modules
 * Middleware stack
-
-Want CLI options? (Example: choose DB type, enable logging, enable JWT auth).
-Ask anytime — can be added quickly.
-
----
-
-## 🧑‍💻 Author
-
-This project was generated using a custom Express boilerplate generator.
-
-Feel free to modify and extend it to match your application needs.
