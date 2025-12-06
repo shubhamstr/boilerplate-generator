@@ -1,0 +1,20 @@
+{
+  "name": "boilerplate-generator",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "boilerplate-generator": "./index.js"
+  },
+  "keywords": [
+    "express",
+    "boilerplate",
+    "generator",
+    "npx"
+  ],
+  "author": "shubhamstr",
+  "license": "ISC",
+  "type": "module",
+  "description": "Custom Express boilerplate generator"
+}
