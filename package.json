@@ -16,5 +16,8 @@
   "author": "shubhamstr",
   "license": "ISC",
   "type": "module",
-  "description": "Custom Express boilerplate generator"
+  "description": "Custom Express boilerplate generator",
+  "dependencies": {
+    "@shubhamstr/express-api-template": "^1.0.0"
+  }
 }
