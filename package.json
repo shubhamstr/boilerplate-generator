@@ -1,11 +1,11 @@
 {
   "name": "@shubhamstr/boilerplate-generator",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "@shubhamstr/boilerplate-generator": "./index.js"
+    "boilerplate-generator": "./index.js"
   },
   "keywords": [
     "express",
@@ -13,11 +13,12 @@
     "generator",
     "npx"
   ],
+  "files": [
+    "index.js",
+    "express-api-template"
+  ],
   "author": "shubhamstr",
   "license": "ISC",
   "type": "module",
-  "description": "Custom Express boilerplate generator",
-  "dependencies": {
-    "@shubhamstr/express-api-template": "^1.0.0"
-  }
+  "description": "Custom Express boilerplate generator"
 }
