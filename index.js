@@ -21,31 +21,12 @@ if (!appName || appName.trim() === "") {
 
 const targetDir = path.resolve(process.cwd(), appName)
 
-// ✅ Correct path to template folder inside node_modules
-const templateDir = path.resolve(
-  __dirname,
-  "..", // go one level up from dist/bin if needed
-  "node_modules",
-  "@shubhamstr",
-  "express-api-template"
-)
+// 🔥 Resolve the root of this installed package (dist/bin → dist → ROOT)
+const packageRoot = path.resolve(__dirname, "..", "..")
 
-// Fallback if executed globally
-const fallbackTemplate = path.resolve(
-  process.cwd(),
-  "node_modules",
-  "@shubhamstr",
-  "express-api-template"
-)
-
-// Choose available template path
-const finalTemplateDir = fs.existsSync(templateDir)
-  ? templateDir
-  : fallbackTemplate
-
-if (!fs.existsSync(finalTemplateDir)) {
-  console.error("❌ Template folder not found inside package:")
-  console.error(finalTemplateDir)
+// Ensure this is not executed incorrectly
+if (!fs.existsSync(packageRoot)) {
+  console.error("❌ Could not resolve package root.")
   process.exit(1)
 }
 
@@ -60,11 +41,25 @@ if (fs.existsSync(targetDir)) {
 // Create destination directory
 fs.mkdirSync(targetDir, { recursive: true })
 
-// Recursively copy template
+// ❌ Things we should NOT copy from the npm package
+const IGNORE = new Set([
+  "node_modules",
+  "dist",
+  "bin",
+  ".git",
+  ".gitignore",
+  "package-lock.json",
+  "boilerplate-generator.js",
+  "boilerplate-generator.ts",
+])
+
+// Recursively copy template (package root → new project)
 function copyDir(src, dest) {
   const entries = fs.readdirSync(src, { withFileTypes: true })
 
   for (const entry of entries) {
+    if (IGNORE.has(entry.name)) continue
+
     const srcPath = path.join(src, entry.name)
     const destPath = path.join(dest, entry.name)
 
@@ -77,8 +72,8 @@ function copyDir(src, dest) {
   }
 }
 
-// Copy template → new project
-copyDir(finalTemplateDir, targetDir)
+// Copy the project template
+copyDir(packageRoot, targetDir)
 
 // Update package.json project name
 const pkgPath = path.join(targetDir, "package.json")
