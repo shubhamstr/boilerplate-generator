@@ -5,55 +5,70 @@ import path from "path"
 import { fileURLToPath } from "url"
 import { execSync } from "child_process"
 
-// Resolve current file and directory
+// Resolve CLI location
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // CLI argument
 const appName = process.argv[2]
 
-// Validate project name
 if (!appName || appName.trim() === "") {
-  console.error("❌ Please provide a project name")
-  console.error("   Example: npx @shubhamstr/boilerplate-generator my-api")
+  console.error("❌ Please provide a project name.")
+  console.error("Example: npx @shubhamstr/boilerplate-generator my-api")
   process.exit(1)
 }
 
 const targetDir = path.resolve(process.cwd(), appName)
 
-// EXACT package root → dist/bin → dist → package root
-const packageRoot = path.resolve(__dirname, "../../..")
+// ------------------
+// TEMPLATE RESOLUTION
+// ------------------
 
-// Ensure this is not executed incorrectly
-if (!fs.existsSync(packageRoot)) {
-  console.error("❌ Could not resolve package root.")
+// 1️⃣ Local install (preferred)
+let templateDir = path.resolve(
+  process.cwd(),
+  "node_modules",
+  "@shubhamstr",
+  "express-api-template"
+)
+
+// 2️⃣ Global install (fallback)
+if (!fs.existsSync(templateDir)) {
+  templateDir = path.resolve(
+    __dirname,
+    "../../node_modules/@shubhamstr/express-api-template"
+  )
+}
+
+// 3️⃣ Final check
+if (!fs.existsSync(templateDir)) {
+  console.error(`❌ Template not found.`)
+  console.error(`Looked in: ${templateDir}`)
   process.exit(1)
 }
 
-console.log(`🚀 Creating Express project: "${appName}"\n`)
+console.log(`✔ Using template from: ${templateDir}`)
+console.log(`🚀 Creating project "${appName}"\n`)
 
-// Prevent overwrite
 if (fs.existsSync(targetDir)) {
   console.error(`❌ Directory "${appName}" already exists.`)
   process.exit(1)
 }
 
-// Create destination directory
 fs.mkdirSync(targetDir, { recursive: true })
 
-// ❌ Things we should NOT copy from the npm package
+// Files/folders to ignore
 const IGNORE = new Set([
   "node_modules",
+  ".git",
   "dist",
   "bin",
-  ".git",
-  ".gitignore",
   "package-lock.json",
-  "boilerplate-generator.js",
-  "boilerplate-generator.ts",
 ])
 
-// Recursively copy template (package root → new project)
+// ------------------
+// COPY FUNCTION
+// ------------------
 function copyDir(src, dest) {
   const entries = fs.readdirSync(src, { withFileTypes: true })
 
@@ -72,12 +87,11 @@ function copyDir(src, dest) {
   }
 }
 
-// Copy the project template
-copyDir(packageRoot, targetDir)
+// COPY TEMPLATE
+copyDir(templateDir, targetDir)
 
-// Update package.json project name
+// UPDATE PACKAGE.JSON
 const pkgPath = path.join(targetDir, "package.json")
-
 if (fs.existsSync(pkgPath)) {
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
   pkg.name = appName
@@ -90,12 +104,11 @@ try {
   execSync("npm install", { stdio: "inherit", cwd: targetDir })
 
   console.log("\n✅ Installation complete!")
-
   console.log("\nNext steps:")
   console.log(`  cd ${appName}`)
-  console.log(`  cp .env.example .env   # update environment variables`)
+  console.log(`  cp .env.example .env`)
   console.log(`  npm run dev`)
-} catch (err) {
+} catch {
   console.error(
     "\n❌ Failed to install dependencies. Run `npm install` manually."
   )
