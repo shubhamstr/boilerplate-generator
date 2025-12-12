@@ -20,7 +20,13 @@ if (!appName || appName.trim() === "") {
 }
 
 const targetDir = path.resolve(process.cwd(), appName)
-const templateDir = path.join(__dirname, "template")
+// const templateDir = path.join(__dirname, "template")
+const templateDir = path.join(
+  process.cwd(),
+  "node_modules",
+  "@shubhamstr",
+  "express-api-template"
+)
 
 // Prevent overwrite
 if (fs.existsSync(targetDir)) {
