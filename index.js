@@ -21,8 +21,8 @@ if (!appName || appName.trim() === "") {
 
 const targetDir = path.resolve(process.cwd(), appName)
 
-// 🔥 Resolve the root of this installed package (dist/bin → dist → ROOT)
-const packageRoot = path.resolve(__dirname, "..", "..")
+// EXACT package root → dist/bin → dist → package root
+const packageRoot = path.resolve(__dirname, "../../..")
 
 // Ensure this is not executed incorrectly
 if (!fs.existsSync(packageRoot)) {
