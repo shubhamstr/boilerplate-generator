@@ -9,10 +9,10 @@ import { execSync } from "child_process"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Read CLI argument
+// CLI argument
 const appName = process.argv[2]
 
-// If no name provided → show usage and exit
+// Validate project name
 if (!appName || appName.trim() === "") {
   console.error("❌ Please provide a project name")
   console.error("   Example: npx @shubhamstr/boilerplate-generator my-api")
@@ -20,13 +20,36 @@ if (!appName || appName.trim() === "") {
 }
 
 const targetDir = path.resolve(process.cwd(), appName)
-// const templateDir = path.join(__dirname, "template")
-const templateDir = path.join(
+
+// ✅ Correct path to template folder inside node_modules
+const templateDir = path.resolve(
+  __dirname,
+  "..", // go one level up from dist/bin if needed
+  "node_modules",
+  "@shubhamstr",
+  "express-api-template"
+)
+
+// Fallback if executed globally
+const fallbackTemplate = path.resolve(
   process.cwd(),
   "node_modules",
   "@shubhamstr",
   "express-api-template"
 )
+
+// Choose available template path
+const finalTemplateDir = fs.existsSync(templateDir)
+  ? templateDir
+  : fallbackTemplate
+
+if (!fs.existsSync(finalTemplateDir)) {
+  console.error("❌ Template folder not found inside package:")
+  console.error(finalTemplateDir)
+  process.exit(1)
+}
+
+console.log(`🚀 Creating Express project: "${appName}"\n`)
 
 // Prevent overwrite
 if (fs.existsSync(targetDir)) {
@@ -34,12 +57,10 @@ if (fs.existsSync(targetDir)) {
   process.exit(1)
 }
 
-console.log(`🚀 Creating Express app in "${appName}"...\n`)
-
-// Create the project directory
+// Create destination directory
 fs.mkdirSync(targetDir, { recursive: true })
 
-// Recursive folder copy function
+// Recursively copy template
 function copyDir(src, dest) {
   const entries = fs.readdirSync(src, { withFileTypes: true })
 
@@ -56,13 +77,14 @@ function copyDir(src, dest) {
   }
 }
 
-// Copy boilerplate template → new project folder
-copyDir(templateDir, targetDir)
+// Copy template → new project
+copyDir(finalTemplateDir, targetDir)
 
-// Update package.json → set correct project name
+// Update package.json project name
 const pkgPath = path.join(targetDir, "package.json")
+
 if (fs.existsSync(pkgPath)) {
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
   pkg.name = appName
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2))
 }
