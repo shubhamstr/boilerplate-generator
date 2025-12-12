@@ -17,39 +17,42 @@ if (!appName || appName.trim() === "") {
   console.error("Example: npx @shubhamstr/boilerplate-generator my-api")
   process.exit(1)
 }
+console.log(appName)
 
 const targetDir = path.resolve(process.cwd(), appName)
+console.log(targetDir)
 
 // ------------------
 // TEMPLATE RESOLUTION
 // ------------------
 
-// 1️⃣ Local install (preferred)
-let templateDir = path.resolve(
-  process.cwd(),
-  "node_modules",
-  "@shubhamstr",
-  "express-api-template"
-)
+// 1️⃣ Template inside the published package (bundled)
+let templateDir = path.join(__dirname, "express-api-template");
+console.log(templateDir)
 
-// 2️⃣ Global install (fallback)
+// 2️⃣ NPX sometimes places package 1 folder higher
 if (!fs.existsSync(templateDir)) {
-  templateDir = path.resolve(
-    __dirname,
-    "../../node_modules/@shubhamstr/express-api-template"
-  )
+  templateDir = path.join(__dirname, "..", "express-api-template");
 }
+console.log(templateDir)
 
-// 3️⃣ Final check
+// 3️⃣ Template inside this package's internal node_modules
+//    (THIS matches your real path!)
 if (!fs.existsSync(templateDir)) {
-  console.error(`❌ Template not found.`)
-  console.error(`Looked in: ${templateDir}`)
-  process.exit(1)
+  templateDir = path.join(
+    __dirname,
+    "node_modules",
+    "@shubhamstr",
+    "express-api-template"
+  );
 }
 
 console.log(`✔ Using template from: ${templateDir}`)
-console.log(`🚀 Creating project "${appName}"\n`)
+console.log(`🚀 Creating project "${appName}"...\n`)
 
+// ------------------
+// Create project directory
+// ------------------
 if (fs.existsSync(targetDir)) {
   console.error(`❌ Directory "${appName}" already exists.`)
   process.exit(1)
@@ -57,7 +60,9 @@ if (fs.existsSync(targetDir)) {
 
 fs.mkdirSync(targetDir, { recursive: true })
 
+// ------------------
 // Files/folders to ignore
+// ------------------
 const IGNORE = new Set([
   "node_modules",
   ".git",
@@ -90,7 +95,7 @@ function copyDir(src, dest) {
 // COPY TEMPLATE
 copyDir(templateDir, targetDir)
 
-// UPDATE PACKAGE.JSON
+// UPDATE PACKAGE.JSON NAME
 const pkgPath = path.join(targetDir, "package.json")
 if (fs.existsSync(pkgPath)) {
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"))
